@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -57,6 +57,7 @@ const TickerBand: React.FC<{
 }> = ({ skills, direction, outline }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const singleSetRef = useRef<HTMLDivElement>(null);
   const [resizeTick, setResizeTick] = useState(0);
 
   // Force re-calculation on resize to fix mobile layout shifts
@@ -70,41 +71,37 @@ const TickerBand: React.FC<{
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Create 4 sets of skills for seamless looping (increased from 3 to ensure mobile width sufficiency)
-  const repeatedSkills = useMemo(
-    () => [...skills, ...skills, ...skills, ...skills],
-    [skills]
-  );
-
   useGSAP(() => {
     const el = containerRef.current;
-    if (!el) return;
+    if (!el || !singleSetRef.current) return;
 
-    // Ensure fonts are loaded so scrollWidth is accurate
+    // Ensure fonts are loaded so width measurement is accurate
     document.fonts.ready.then(() => {
-      // Double check element still exists in case of unmount
-      if (!containerRef.current) return;
+      if (!containerRef.current || !singleSetRef.current) return;
 
-      const totalWidth = containerRef.current.scrollWidth;
-      const distance = totalWidth / 4; // Dividing by 4 copies
+      // Measure the exact width of ONE set of skills
+      const distance = singleSetRef.current.getBoundingClientRect().width;
 
       // Speed: 100 pixels per second
       const speedPixelsPerSecond = 100;
       const duration = distance / speedPixelsPerSecond;
 
-      // Initial setup for 'right' direction
+      // Initial setup
       if (direction === "right") {
         gsap.set(el, { x: -distance });
+      } else {
+        gsap.set(el, { x: 0 });
       }
 
       // Infinite Scroll Animation
+      // We animate by exactly one set's width, then reset instantly.
+      // Since Set 2 is identical to Set 1, the reset is invisible.
       gsap.to(el, {
         x: direction === "left" ? -distance : 0,
         duration: duration,
         ease: "none",
         repeat: -1,
         onRepeat: () => {
-          // Reset position instantly to create seamless loop
           gsap.set(el, { x: direction === "left" ? 0 : -distance });
         },
       });
@@ -127,7 +124,26 @@ const TickerBand: React.FC<{
         },
       });
     });
-  }, [direction, repeatedSkills, resizeTick]);
+  }, [direction, resizeTick, skills]);
+
+  const renderSkillSet = () => (
+    <>
+      {skills.map((skill, i) => (
+        <span
+          key={i}
+          className={`flex-shrink-0 mx-3 md:mx-6 text-2xl md:text-6xl font-serif italic ${
+            outline
+              ? "text-transparent stroke-black stroke-1 opacity-40"
+              : "text-black"
+          }`}
+          style={outline ? { WebkitTextStroke: "1px #151515" } : {}}
+        >
+          {skill}{" "}
+          <span className="text-violet mx-2 md:mx-4 text-sm md:text-xl">•</span>
+        </span>
+      ))}
+    </>
+  );
 
   return (
     <div className="overflow-hidden py-1 md:py-2" ref={wrapperRef}>
@@ -135,22 +151,14 @@ const TickerBand: React.FC<{
         ref={containerRef}
         className="inline-flex flex-nowrap will-change-transform w-max"
       >
-        {repeatedSkills.map((skill, i) => (
-          <span
-            key={i}
-            className={`flex-shrink-0 mx-3 md:mx-6 text-2xl md:text-6xl font-serif italic ${
-              outline
-                ? "text-transparent stroke-black stroke-1 opacity-40"
-                : "text-black"
-            }`}
-            style={outline ? { WebkitTextStroke: "1px #151515" } : {}}
-          >
-            {skill}{" "}
-            <span className="text-violet mx-2 md:mx-4 text-sm md:text-xl">
-              •
-            </span>
-          </span>
-        ))}
+        {/* Set 1: Measured for distance */}
+        <div ref={singleSetRef} className="flex shrink-0 items-center">
+          {renderSkillSet()}
+        </div>
+        {/* Set 2: The Loop buffer */}
+        <div className="flex shrink-0 items-center">{renderSkillSet()}</div>
+        {/* Set 3: Extra safety buffer for wide screens */}
+        <div className="flex shrink-0 items-center">{renderSkillSet()}</div>
       </div>
     </div>
   );
