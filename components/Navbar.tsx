@@ -13,6 +13,7 @@ const Navbar: React.FC = () => {
   const capsuleRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDarkBg, setIsDarkBg] = useState(false);
 
   // We use a ref to track menu state inside the GSAP callback
   const isMenuOpenRef = useRef(isMenuOpen);
@@ -28,7 +29,7 @@ const Navbar: React.FC = () => {
     isMenuOpenRef.current = isMenuOpen;
   }, [isMenuOpen]);
 
-  // Navbar Animation & Smart Scroll Logic
+  // Navbar Animation, Smart Scroll & Color Logic
   useGSAP(() => {
     const el = navContainerRef.current;
     if (!el) return;
@@ -52,7 +53,6 @@ const Navbar: React.FC = () => {
 
         // Scroll Down (> 50px threshold)
         if (self.direction === 1 && currentScroll > 50) {
-          // Increased duration from 0.5 to 0.8 for smoother exit
           gsap.to(el, {
             yPercent: -150,
             duration: 0.8,
@@ -62,7 +62,6 @@ const Navbar: React.FC = () => {
         }
         // Scroll Up
         else if (self.direction === -1) {
-          // Increased duration from 0.5 to 0.8 for smoother entry
           gsap.to(el, {
             yPercent: 0,
             duration: 0.8,
@@ -72,7 +71,21 @@ const Navbar: React.FC = () => {
         }
       },
     });
-  }, []);
+
+    // 3. Logo Color Toggle (Dark/Light Sections)
+    const darkSections = document.querySelectorAll('[data-theme="dark"]');
+    darkSections.forEach((section) => {
+      ScrollTrigger.create({
+        trigger: section,
+        start: "top 32px", // Approx center of logo (py-6 is 24px + half text height)
+        end: "bottom 32px",
+        onEnter: () => setIsDarkBg(true),
+        onLeave: () => setIsDarkBg(false),
+        onEnterBack: () => setIsDarkBg(true),
+        onLeaveBack: () => setIsDarkBg(false),
+      });
+    });
+  }, [location.pathname]); // Re-run logic when route changes
 
   // Mobile Menu Animation Setup
   useGSAP(
@@ -181,7 +194,9 @@ const Navbar: React.FC = () => {
               <img
                 src="/Logo.png"
                 alt="Priyatharshini"
-                className="h-16 md:h-12 w-auto object-contain"
+                className={`h-12 w-auto transition-all duration-300 ${
+                  isDarkBg ? "invert" : ""
+                }`}
               />
             </button>
           </Magnetic>
@@ -202,17 +217,18 @@ const Navbar: React.FC = () => {
                 <button
                   key={item}
                   onClick={() => handleNavigation(path)}
-                  className="relative px-5 py-2 rounded-full transition-all duration-300 group"
+                  className="relative px-5 py-2 rounded-full transition-all duration-300 group flex flex-col items-center justify-center"
                 >
                   <span
-                    className={`relative z-10 font-mono text-xs uppercase tracking-widest transition-colors duration-300 ${
-                      active
-                        ? "text-black font-semibold"
-                        : "text-black/40 hover:text-black"
+                    className={`relative z-10 font-mono text-xs uppercase tracking-widest transition-colors duration-300 text-black ${
+                      active ? "font-semibold" : "font-normal hover:opacity-70"
                     }`}
                   >
                     {item}
                   </span>
+                  {active && (
+                    <span className="absolute bottom-1.5 w-1 h-1 bg-black rounded-full animate-fadeIn"></span>
+                  )}
                 </button>
               );
             })}

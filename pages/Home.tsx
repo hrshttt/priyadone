@@ -26,7 +26,7 @@ import FocusParagraph from "../components/FocusParagraph";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-// Behance Icon Component - Text based "Be"
+// Behance Icon Component - Text based "Bē" with sans-serif bold
 const BehanceIcon = ({ className }: { className?: string }) => (
   <span
     className={`font-sans font-bold text-xl flex items-center justify-center leading-none tracking-tighter ${className}`}
@@ -47,7 +47,6 @@ const Home: React.FC = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   const parallaxRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLElement>(null);
-  const fixedWhatsappRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -195,17 +194,19 @@ const Home: React.FC = () => {
         },
       });
 
-      // Sticky WhatsApp Logic: Hide when footer enters view
-      if (fixedWhatsappRef.current && footerRef.current) {
-        gsap.to(fixedWhatsappRef.current, {
+      // Sticky WhatsApp Logic: Hide when footer enters view (top bottom)
+      const fixedWhatsapp = document.querySelector(".fixed-whatsapp-btn");
+      if (fixedWhatsapp && footerRef.current) {
+        gsap.to(fixedWhatsapp, {
           autoAlpha: 0,
           y: 20,
           duration: 0.3,
           ease: "power2.inOut",
+          pointerEvents: "none",
           overwrite: true,
           scrollTrigger: {
             trigger: footerRef.current,
-            start: "top 95%", // Trigger slightly earlier to ensure it disappears
+            start: "top bottom", // Immediate hide when footer enters
             toggleActions: "play none none reverse",
           },
         });
@@ -278,10 +279,10 @@ const Home: React.FC = () => {
                 onClick={() => handleNavigation("/work")}
                 className="hero-btn clickable group relative px-8 py-4 bg-black overflow-hidden rounded-full border border-black transition-colors duration-300 w-full md:w-48"
               >
-                <span className="relative z-10 font-serif italic text-xl text-stone-50 group-hover:text-white transition-colors duration-300">
+                <span className="relative z-10 font-serif italic text-xl text-stone-50 group-hover:text-black transition-colors duration-300">
                   View My Work
                 </span>
-                <div className="absolute inset-0 bg-violet translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out"></div>
+                <div className="absolute inset-0 bg-stone-50 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out"></div>
               </button>
             </Magnetic>
           </div>
@@ -304,7 +305,7 @@ const Home: React.FC = () => {
               <div className="relative bg-white border border-black p-5 pb-8 rotate-[-3deg] transition-all duration-500 hover:rotate-0 hover:shadow-xl shadow-[12px_12px_0px_0px_rgba(0,0,0,0.05)] will-change-transform">
                 <div className="relative w-full aspect-[3/4] bg-stone-200 overflow-hidden mb-6 filter grayscale-0 md:grayscale md:group-hover:grayscale-0 transition-all duration-700 border-b border-black/5">
                   <img
-                    src="/Photo.png"
+                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576&auto=format&fit=crop"
                     alt="Priyatharshini"
                     className="w-full h-full object-cover"
                   />
@@ -441,7 +442,10 @@ const Home: React.FC = () => {
       <JourneySection />
 
       {/* SECTION E: IMPACT QUOTE */}
-      <section className="py-32 flex justify-center items-center bg-black px-6">
+      <section
+        className="py-32 flex justify-center items-center bg-black px-6"
+        data-theme="dark"
+      >
         <div className="max-w-4xl text-center">
           <h2
             className="font-serif italic text-3xl md:text-5xl text-stone-50 mb-6"
@@ -475,7 +479,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Sticky WhatsApp Button */}
-      <div ref={fixedWhatsappRef} className="fixed bottom-6 right-6 z-50">
+      <div className="fixed-whatsapp-btn fixed bottom-6 right-6 z-50">
         <Magnetic>
           <a
             href="https://wa.me/919499929875"
@@ -493,6 +497,7 @@ const Home: React.FC = () => {
         id="contact"
         ref={footerRef}
         className="min-h-screen flex flex-col justify-between px-6 md:px-12 py-12 bg-black text-stone-50 relative overflow-hidden footer-container"
+        data-theme="dark"
       >
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-stone-50 via-stone-50 to-transparent h-12 z-10 pointer-events-none opacity-10"></div>
         <div className="absolute -bottom-[20%] -right-[10%] w-[800px] h-[800px] bg-violet/20 rounded-full blur-[150px] pointer-events-none"></div>
