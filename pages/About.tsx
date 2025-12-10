@@ -106,8 +106,8 @@ const About: React.FC = () => {
               </p>
             </div>
 
-            <div className="flex items-center gap-12 pt-8 mt-4">
-              <div className="flex-1">
+            <div className="flex items-center pt-8 mt-4 w-full">
+              <div>
                 <span className="block font-serif italic text-3xl mb-1">
                   INTP
                 </span>
@@ -116,9 +116,9 @@ const About: React.FC = () => {
                 </span>
               </div>
 
-              <div className="w-[3px] h-12 bg-black/20"></div>
+              <div className="w-[3px] h-12 bg-black/20 mx-24"></div>
 
-              <div className="flex-1 pl-8">
+              <div>
                 <span className="block font-serif italic text-3xl mb-1">
                   Details
                 </span>
@@ -179,7 +179,9 @@ const About: React.FC = () => {
                 <span className="font-mono text-xs text-violet mb-4 block">
                   0{i + 1}
                 </span>
-                <p className="font-serif text-2xl text-white/50 group-hover:text-white transition-colors duration-500 leading-snug">
+                <p
+                  className={`font-serif text-white/50 group-hover:text-white transition-colors duration-500 leading-snug text-2xl`}
+                >
                   {text}
                 </p>
               </div>
