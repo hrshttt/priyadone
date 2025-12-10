@@ -305,7 +305,7 @@ const Home: React.FC = () => {
               <div className="relative bg-white border border-black p-5 pb-8 rotate-[-3deg] transition-all duration-500 hover:rotate-0 hover:shadow-xl shadow-[12px_12px_0px_0px_rgba(0,0,0,0.05)] will-change-transform">
                 <div className="relative w-full aspect-[3/4] bg-stone-200 overflow-hidden mb-6 filter grayscale-0 md:grayscale md:group-hover:grayscale-0 transition-all duration-700 border-b border-black/5">
                   <img
-                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576&auto=format&fit=crop"
+                    src="/Photo.png"
                     alt="Priyatharshini"
                     className="w-full h-full object-cover"
                   />

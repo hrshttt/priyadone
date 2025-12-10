@@ -65,7 +65,7 @@ const About: React.FC = () => {
           <div className="relative group about-image md:sticky md:top-32">
             <div className="aspect-[3/4] bg-stone-200 overflow-hidden relative z-10">
               <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=2864&auto=format&fit=crop"
+                src="/Photo.png"
                 alt="Priyatharshini"
                 className="w-full h-full object-cover grayscale-0 md:grayscale md:group-hover:grayscale-0 transition-all duration-700"
               />
